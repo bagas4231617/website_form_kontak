@@ -170,3 +170,38 @@
 #jobTitle {
     transition: opacity 0.3s ease-in-out;
 }
+
+/* Profile Menu Styles */
+.profile-menu-item {
+    transition: all 0.2s ease;
+}
+
+.profile-menu-item:hover {
+    transform: translateX(4px);
+}
+
+/* Profile dropdown animation */
+#profile-dropdown {
+    transform-origin: top right;
+}
+
+/* Profile chevron animation */
+#profile-chevron {
+    transition: transform 0.2s ease;
+}
+
+/* Notification styles for profile menu actions */
+.notification {
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

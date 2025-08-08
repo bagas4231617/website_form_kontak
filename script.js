@@ -33,11 +33,126 @@ tailwind.config = {
 const mobileMenuButton = document.getElementById('mobile-menu-button');
 const mobileMenu = document.getElementById('mobile-menu');
 
+// Profile menu elements
+const profileButton = document.getElementById('profile-button');
+const profileDropdown = document.getElementById('profile-dropdown');
+const profileChevron = document.getElementById('profile-chevron');
+const logoutButton = document.getElementById('logout-button');
+const userNameElement = document.getElementById('user-name');
+const dropdownUserName = document.getElementById('dropdown-user-name');
+const dropdownUserEmail = document.getElementById('dropdown-user-email');
+
 mobileMenuButton.addEventListener('click', () => {
     const isOpen = mobileMenu.classList.contains('open');
     mobileMenu.style.maxHeight = isOpen ? '0' : `${mobileMenu.scrollHeight}px`;
     mobileMenu.classList.toggle('open');
 });
+
+// Profile menu toggle
+profileButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = profileDropdown.classList.contains('opacity-100');
+    
+    if (isOpen) {
+        closeProfileMenu();
+    } else {
+        openProfileMenu();
+    }
+});
+
+// Close profile menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (!document.getElementById('user-profile-container').contains(e.target)) {
+        closeProfileMenu();
+    }
+});
+
+// Profile menu functions
+function openProfileMenu() {
+    profileDropdown.classList.remove('opacity-0', 'invisible', 'scale-95');
+    profileDropdown.classList.add('opacity-100', 'visible', 'scale-100');
+    profileChevron.style.transform = 'rotate(180deg)';
+}
+
+function closeProfileMenu() {
+    profileDropdown.classList.remove('opacity-100', 'visible', 'scale-100');
+    profileDropdown.classList.add('opacity-0', 'invisible', 'scale-95');
+    profileChevron.style.transform = 'rotate(0deg)';
+}
+
+// Check for logged in user and update UI
+function updateUserInfo() {
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    
+    if (loggedInUser) {
+        userNameElement.textContent = loggedInUser.firstName;
+        dropdownUserName.textContent = `${loggedInUser.firstName} ${loggedInUser.lastName}`;
+        dropdownUserEmail.textContent = loggedInUser.email;
+    } else {
+        userNameElement.textContent = 'Guest';
+        dropdownUserName.textContent = 'Guest User';
+        dropdownUserEmail.textContent = 'guest@example.com';
+    }
+}
+
+// Logout functionality
+logoutButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    
+    // Show confirmation dialog
+    if (confirm('Are you sure you want to logout?')) {
+        // Clear user data
+        localStorage.removeItem('loggedInUser');
+        
+        // Show logout message
+        const logoutMessage = document.createElement('div');
+        logoutMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300';
+        logoutMessage.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Successfully logged out!';
+        document.body.appendChild(logoutMessage);
+        
+        // Remove message after 3 seconds
+        setTimeout(() => {
+            logoutMessage.remove();
+        }, 3000);
+        
+        // Update UI
+        updateUserInfo();
+        closeProfileMenu();
+        
+        // Redirect to auth page after a short delay
+        setTimeout(() => {
+            window.location.href = 'auth.html';
+        }, 1500);
+    }
+});
+
+// Profile menu item click handlers
+document.querySelectorAll('.profile-menu-item').forEach(item => {
+    if (item.id !== 'logout-button') {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Get the menu item text
+            const menuText = item.querySelector('span').textContent;
+            
+            // Show coming soon message
+            const message = document.createElement('div');
+            message.className = 'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300';
+            message.innerHTML = `<i class="fas fa-info-circle mr-2"></i>${menuText} - Coming Soon!`;
+            document.body.appendChild(message);
+            
+            // Remove message after 3 seconds
+            setTimeout(() => {
+                message.remove();
+            }, 3000);
+            
+            closeProfileMenu();
+        });
+    }
+});
+
+// Initialize user info on page load
+updateUserInfo();
 
 // Theme toggle
 const themeToggle = document.getElementById('theme-toggle');
